@@ -1,5 +1,7 @@
 ﻿using Microsoft.Maui.Layouts;
 using System.ComponentModel;
+using static Microsoft.Maui.ApplicationModel.Permissions;
+
 
 /* most code here and in MainPage.cs was used from my DodgeGame lab,
  * with changes to it to create a basic layout for the space
@@ -71,7 +73,6 @@ namespace OneMansSky
                 WidthRequest = size + size / 20,
                 HeightRequest = size + size / 20,
                 Source = ImageSource.FromFile("rocket.png"),
-                Rotation = 360
             };
             box.Add(image);
 
@@ -93,7 +94,7 @@ namespace OneMansSky
                 Update();
             };
 
-            speed = size / 300.0;
+            speed = size / 250.0;
             Allowmoves = false;
 
             ShootCommand = new Command(async () => await ShootLaser());
@@ -113,7 +114,7 @@ namespace OneMansSky
                 Source = ImageSource.FromFile("laser.png"),
                 //laser size
                 WidthRequest = size * 2,   
-                HeightRequest = size, 
+                HeightRequest = size,
             };
 
             //calculating lasers positions, x centering on players center, y placing it just above player, finalY setting destination
@@ -146,9 +147,9 @@ namespace OneMansSky
         {
             if (!allowmoves)
             {
-                //starting player in bottom center of screen
+                //starting player in center of screen
                 box.TranslationX = (maxWidth - size) / 2;
-                box.TranslationY = (maxHeight - size);
+                box.TranslationY = (maxHeight - size) / 2;
                 pos.X = box.TranslationX;
                 pos.Y = box.TranslationY;
                 Allowmoves = true;
@@ -167,8 +168,6 @@ namespace OneMansSky
                     box.CancelAnimations();
                 }
             }
-            pos.Y = box.TranslationY;
-            pos.X = box.TranslationX;
         }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
@@ -176,15 +175,15 @@ namespace OneMansSky
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        //moving the ship can still be buggy, and you can get faster or slower speeds depending where you click.
         public async Task MovePlayer(Point p)
         {
             if (allowmoves)
             {
                 //canceling any current animations to before new one
                 if (animation != null)
-                {
                     box.CancelAnimations();
-                }
+
                 //ensures the players center goes to target point
                 p.X -= size / 2;
                 p.Y -= size / 2;
@@ -193,8 +192,15 @@ namespace OneMansSky
                 double distance = p.Distance(new Point(pos.X, pos.Y));
                 uint time = (uint)(distance / speed);
 
+                //avoiding instant moving of the spaceship if clicked fast
+                time = Math.Max(time, 1000);
+
                 animation = box.TranslateTo(p.X, p.Y, time);
                 await animation;
+
+                pos.X = p.X;
+                pos.Y = p.Y;
+
                 animation = null;
             }
         }

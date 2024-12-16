@@ -16,16 +16,18 @@
             <AbsoluteLayout x:Name="GameLayout" WidthRequest="800" HeightRequest="300">
                 <AbsoluteLayout.GestureRecognizers>
                     <TapGestureRecognizer 
-                Tapped="TapGestureRecognizer_Tapped"/>
+                    Tapped="TapGestureRecognizer_Tapped"/>
                 </AbsoluteLayout.GestureRecognizers>
             </AbsoluteLayout>
 
             <Button x:Name="StartButton" WidthRequest="150" HeightRequest="60" Text="Start Game" Clicked="Start_Button_Clicked" IsVisible="{Binding EnableButton}" ZIndex="10"/>
-            <Grid x:Name="Bottom" WidthRequest="150" HeightRequest="60" ColumnDefinitions="*,*,*" RowDefinitions="*,*,*" HorizontalOptions="Center">
+            <Grid x:Name="Bottom" BackgroundColor="Black" WidthRequest="150" HeightRequest="60" HorizontalOptions="Center">
                 <Button  Text="Shoot!" WidthRequest="90" HeightRequest="50" Command="{Binding ShootCommand}" />
             </Grid>
 
         </VerticalStackLayout>
     </Grid>
+
+    
 
 </ContentPage>

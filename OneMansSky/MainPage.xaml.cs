@@ -46,7 +46,6 @@ namespace OneMansSky
                 charHeight = GameLayout.Height / 12.0;
                 player = new Player(charHeight, GameLayout, GameLayout.Height, GameLayout.Width);
                 BindingContext = player;
-                this.SetBinding(TitleProperty, "TopInformatiion");
                 startGame = true;
             }
         }
