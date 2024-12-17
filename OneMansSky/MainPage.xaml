@@ -7,10 +7,9 @@
              x:DataType="viewmodel:Player">
 
     <Grid>
-        <Image Source="starbg.jpg"
-       Aspect="AspectFill"
-       HorizontalOptions="Fill"
-       VerticalOptions="Fill"/>
+        <Image Source="starbg.jpg" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+
+        <Grid x:Name="CelestialMap" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="5" Margin="5" BackgroundColor="Transparent"/>
 
         <VerticalStackLayout>
             <AbsoluteLayout x:Name="GameLayout" WidthRequest="800" HeightRequest="300">
@@ -24,6 +23,7 @@
             <Grid x:Name="Bottom" BackgroundColor="Black" WidthRequest="150" HeightRequest="60" HorizontalOptions="Center">
                 <Button  Text="Shoot!" WidthRequest="90" HeightRequest="50" Command="{Binding ShootCommand}" />
             </Grid>
+
 
         </VerticalStackLayout>
     </Grid>

@@ -122,21 +122,15 @@ namespace OneMansSky
             double laserY = box.TranslationY - laser.HeightRequest;
             double finalY = -laser.HeightRequest;
 
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                mainLayout.Add(laser);
-                AbsoluteLayout.SetLayoutFlags(laser, AbsoluteLayoutFlags.None);
-                AbsoluteLayout.SetLayoutBounds(laser, new Rect(laserX, laserY, laser.WidthRequest, laser.HeightRequest));
-            });
-
+            mainLayout.Add(laser);
+            AbsoluteLayout.SetLayoutFlags(laser, AbsoluteLayoutFlags.None);
+            AbsoluteLayout.SetLayoutBounds(laser, new Rect(laserX, laserY, laser.WidthRequest, laser.HeightRequest));
+            
             uint duration = 1000;
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                //set x to 0 so no horizontal movement with laser
-                await laser.TranslateTo(0, finalY - laserY, duration);
-            });
-
+            //set x to 0 so no horizontal movement with laser
+            await laser.TranslateTo(0, finalY - laserY, duration);
+            
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 mainLayout.Remove(laser);
