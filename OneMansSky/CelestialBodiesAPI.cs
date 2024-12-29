@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace OneMansSky
 {
-    public static class CelestialDataService
+    public static class CelestialBodiesAPI
     {
         //setting fileName to be appdata folder to get celestial bodies from
         private static readonly string fileName = Path.Combine(FileSystem.AppDataDirectory, "celestialBodies.json");
@@ -14,20 +14,29 @@ namespace OneMansSky
             public List<CelestialBody>? bodies { get; set; }
         }
 
-        //celestial body field, very basic for now, more will be added later
         public class CelestialBody
         {
-            public string name { get; set; }
+            public string id { get; set; }                        
+            public string englishName { get; set; }      
+            public bool isPlanet { get; set; }           
+            public string discoveryDate { get; set; }
+            public string bodyType { get; set; }
+            public double gravity { get; set; }
+            public string discoveredBy { get; set; }
+
+            public string shortDescription
+            {
+                get
+                {
+                    return $"{englishName} is a {bodyType}, discovered on {discoveryDate}, with a gravity of {gravity} m/s2.\nIt was discovered by {discoveredBy}.";
+                }
+            }
         }
 
         //func to return bodies from api or local file
         public static async Task<List<CelestialBody>> GetCelestialInfo()
         {
-            if (savedBodies is not null)
-            {
-                return savedBodies;
-            }
-
+            
             if (!File.Exists(fileName))
             {
                 //if bodies file doesnt exist calls api

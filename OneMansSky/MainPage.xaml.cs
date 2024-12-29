@@ -1,5 +1,6 @@
 ﻿using OneMansSky;
 using System.Text.Json;
+using static OneMansSky.CelestialBodiesAPI;
 
 namespace OneMansSky
 {
@@ -9,6 +10,7 @@ namespace OneMansSky
         double charHeight = 0;
         bool startGame = false;
         Player? player;
+        private CelestialBody? planetToLand;
 
         private const int NumRows = 10;
         private const int NumCols = 10;
@@ -42,7 +44,7 @@ namespace OneMansSky
             this.Window.MinimumWidth = DeviceDisplay.Current.MainDisplayInfo.Width;
 #endif
 
-            var bodies = await CelestialDataService.GetCelestialInfo();
+            var bodies = await CelestialBodiesAPI.GetCelestialInfo();
 
             if (CelestialMap != null && CelestialMap.Children.Count == 0)
             {
@@ -51,7 +53,7 @@ namespace OneMansSky
         }
 
         //func to fill the map with random celestial bodies
-        private void BuildCelestialMap(List<CelestialDataService.CelestialBody> bodies)
+        private void BuildCelestialMap(List<CelestialBodiesAPI.CelestialBody> bodies)
         {
             //clears all rows and cols first
             CelestialMap.RowDefinitions.Clear();
@@ -73,7 +75,7 @@ namespace OneMansSky
                     //random value from 0 to 1
                     double chance = random.NextDouble();
                     //5% chance for a cell to have something in it (may be tweaked later)
-                    if (chance > 0.95) 
+                    if (chance > 0.97)
                     {
                         //selects random body from bodies list
                         int index = random.Next(bodies.Count);
@@ -85,8 +87,10 @@ namespace OneMansSky
                             Source = ImageSource.FromFile("planettest.png"),
                             HorizontalOptions = LayoutOptions.Center,
                             VerticalOptions = LayoutOptions.Center,
-                            WidthRequest = 60,   
-                            HeightRequest = 60
+                            WidthRequest = 60,
+                            HeightRequest = 60,
+
+                            BindingContext = body
                         };
                         //adding body to the map
                         CelestialMap.Add(planetImage, col, row);
@@ -113,10 +117,74 @@ namespace OneMansSky
             if (player != null)
             {
                 await player.MovePlayer((Point)e.GetPosition(GameLayout));
+
+                IsPlanetHover();
             }
 
         }
 
-    }
+        //func to check if players ship is hovering over a planet, to display land button
+        private void IsPlanetHover()
+        {
+            //get center coordinates of the player
+            double playerCenterX = player.Position.X + player.Position.Width / 2;
+            double playerCenterY = player.Position.Y + player.Position.Height / 2;
 
- }
+            CelestialBody hoveredPlanet = null;
+            double hoverDistanceThreshold = 50; //how close the player needs to be to be considered hovering over the planet
+
+            //loop to go through all the children in the map
+            foreach (var child in CelestialMap.Children)
+            {
+                if (child is Image planetImage && planetImage.BindingContext is CelestialBody planetData)
+                {
+                    //gets grid location of the planet
+                    int row = Grid.GetRow(planetImage);
+                    int col = Grid.GetColumn(planetImage);
+
+                    //gets diameters of the cell, and the center of which grid cell the planet is in
+                    double width = CelestialMap.Width / NumCols;
+                    double height = CelestialMap.Height / NumRows;
+                    double planetCenterX = (col + 0.5) * width;
+                    double planetCenterY = (row + 0.5) * height;
+
+                    //calculating the distance between the players center and center of planet
+                    double dx = planetCenterX - playerCenterX;
+                    double dy = planetCenterY - playerCenterY;
+                    double distance = Math.Sqrt(dx * dx + dy * dy);
+
+                    //then if player is close enough to the planet it will allow them to land on it
+                    if (distance <= hoverDistanceThreshold)
+                    {
+                        hoveredPlanet = planetData;
+                        break;
+                    }
+                }
+
+            }
+
+            //displays land button
+            if (hoveredPlanet != null)
+            {
+                LandButton.IsVisible = true; 
+                planetToLand = hoveredPlanet;
+            }
+            else
+            {
+                LandButton.IsVisible = false;
+                planetToLand = null;
+            }
+
+        }
+
+        //when land is clicked displays info page 
+        private async void LandButton_Clicked(object sender, EventArgs e)
+        {
+            if (planetToLand != null)
+            {
+                await Navigation.PushModalAsync(new PlanetDetails(), true);
+            }
+        }
+
+    }
+}

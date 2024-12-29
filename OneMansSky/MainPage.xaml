@@ -20,8 +20,12 @@
             </AbsoluteLayout>
 
             <Button x:Name="StartButton" WidthRequest="150" HeightRequest="60" Text="Start Game" Clicked="Start_Button_Clicked" IsVisible="{Binding EnableButton}" ZIndex="10"/>
-            <Grid x:Name="Bottom" BackgroundColor="Black" WidthRequest="150" HeightRequest="60" HorizontalOptions="Center">
-                <Button  Text="Shoot!" WidthRequest="90" HeightRequest="50" Command="{Binding ShootCommand}" />
+            <Grid x:Name="Bottom" WidthRequest="200" HeightRequest="60" HorizontalOptions="Center">
+                <HorizontalStackLayout Spacing="10" Padding="5">
+                    <Button Text="Shoot!" WidthRequest="90" HeightRequest="50" Command="{Binding ShootCommand}" />
+                    
+                    <Button x:Name="LandButton" Text="Land" WidthRequest="70" HeightRequest="50" IsVisible="False" Clicked="LandButton_Clicked" />
+                </HorizontalStackLayout>
             </Grid>
 
 

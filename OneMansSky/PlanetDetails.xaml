@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OneMansSky.PlanetDetails"
+             xmlns:planet="clr-namespace:OneMansSky"
+             Title="Details"
+             x:DataType="planet:PlanetDetails"
+             BackgroundColor="#90000000">
+
+    <VerticalStackLayout
+        VerticalOptions="Center"
+        HorizontalOptions="Center"
+        MaximumHeightRequest="{Binding PopupWidth}"
+        MaximumWidthRequest="{Binding PopupHeight}"
+        Padding="20"
+        Margin="20">
+
+        <Frame CornerRadius="20" BackgroundColor="LightBlue" Padding="10">
+            <VerticalStackLayout>
+                <Label Text="{Binding Planet.englishName}" x:Name="PlanetNameLabel" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+
+                <Label Text="{Binding Planet.shortDescription}" x:Name="PlanetDescriptionLabel" FontSize="14" VerticalOptions="Center" />
+
+                <Button Text="Close" Margin="10" BackgroundColor="Black" Command="{Binding CloseCommand}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Frame>
+    </VerticalStackLayout>
+</ContentPage>
