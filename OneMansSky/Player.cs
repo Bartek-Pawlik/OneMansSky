@@ -1,6 +1,5 @@
 ﻿using Microsoft.Maui.Layouts;
 using System.ComponentModel;
-using static Microsoft.Maui.ApplicationModel.Permissions;
 
 
 /* most code here and in MainPage.cs was used from my DodgeGame lab,

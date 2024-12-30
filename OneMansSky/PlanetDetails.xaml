@@ -7,16 +7,11 @@
              x:DataType="planet:PlanetDetails"
              BackgroundColor="#90000000">
 
-    <VerticalStackLayout
-        VerticalOptions="Center"
-        HorizontalOptions="Center"
-        MaximumHeightRequest="{Binding PopupWidth}"
-        MaximumWidthRequest="{Binding PopupHeight}"
-        Padding="20"
-        Margin="20">
-
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" MaximumHeightRequest="{Binding PopupWidth}" MaximumWidthRequest="{Binding PopupHeight}" Padding="20" Margin="20">
         <Frame CornerRadius="20" BackgroundColor="LightBlue" Padding="10">
             <VerticalStackLayout>
+                <Label Text="{Binding DiscoveredMessage}" FontSize="18" HorizontalOptions="Center" />
+
                 <Label Text="{Binding Planet.englishName}" x:Name="PlanetNameLabel" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
 
                 <Label Text="{Binding Planet.shortDescription}" x:Name="PlanetDescriptionLabel" FontSize="14" VerticalOptions="Center" />

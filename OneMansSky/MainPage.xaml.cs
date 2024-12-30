@@ -75,16 +75,20 @@ namespace OneMansSky
                     //random value from 0 to 1
                     double chance = random.NextDouble();
                     //5% chance for a cell to have something in it (may be tweaked later)
-                    if (chance > 0.97)
+                    if (chance > 0.95)
                     {
                         //selects random body from bodies list
                         int index = random.Next(bodies.Count);
                         var body = bodies[index];
 
-                        //placeholder image for now, more will be added later
+                        //random number from 1-20 to choose planet image
+                        Random randomPlanet = new Random();
+                        int randNum = random.Next(1,21);
+    
+                        //planet image depends on random num above
                         Image planetImage = new Image
                         {
-                            Source = ImageSource.FromFile("planettest.png"),
+                            Source = ImageSource.FromFile("planet" + randNum + ".png"),
                             HorizontalOptions = LayoutOptions.Center,
                             VerticalOptions = LayoutOptions.Center,
                             WidthRequest = 60,
@@ -124,6 +128,7 @@ namespace OneMansSky
         }
 
         //func to check if players ship is hovering over a planet, to display land button
+        //for calculating the distance i used: https://stackoverflow.com/questions/61237236/trying-to-find-the-distance-between-2-points, https://stackoverflow.com/questions/26157199/how-to-calculate-distance-between-2-coordinates
         private void IsPlanetHover()
         {
             //get center coordinates of the player
@@ -182,7 +187,8 @@ namespace OneMansSky
         {
             if (planetToLand != null)
             {
-                await Navigation.PushModalAsync(new PlanetDetails(), true);
+                var detailsPage = new PlanetDetails(planetToLand);
+                await Navigation.PushModalAsync(detailsPage, true);
             }
         }
 
