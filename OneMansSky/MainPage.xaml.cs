@@ -11,11 +11,12 @@ namespace OneMansSky
         bool startGame = false;
         Player? player;
         private CelestialBody? planetToLand;
+        private int planetCount = 0;
+        private static List<string> discoveredPlanets = new List<string>();
 
         private const int NumRows = 10;
         private const int NumCols = 10;
 
-        //constructor
         public MainPage()
         {
             InitializeComponent();
@@ -55,15 +56,22 @@ namespace OneMansSky
         //func to fill the map with random celestial bodies
         private void BuildCelestialMap(List<CelestialBodiesAPI.CelestialBody> bodies)
         {
+            planetCount = 0;
+
             //clears all rows and cols first
             CelestialMap.RowDefinitions.Clear();
             CelestialMap.ColumnDefinitions.Clear();
+            CelestialMap.Children.Clear();
 
             //creates row and col definitions for the grid
             for (int r = 0; r < NumRows; r++)
+            {
                 CelestialMap.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            }
             for (int c = 0; c < NumCols; c++)
+            {
                 CelestialMap.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            }
 
             Random random = new Random();
 
@@ -82,9 +90,8 @@ namespace OneMansSky
                         var body = bodies[index];
 
                         //random number from 1-20 to choose planet image
-                        Random randomPlanet = new Random();
-                        int randNum = random.Next(1,21);
-    
+                        int randNum = random.Next(1, 21);
+
                         //planet image depends on random num above
                         Image planetImage = new Image
                         {
@@ -96,12 +103,36 @@ namespace OneMansSky
 
                             BindingContext = body
                         };
+                        planetCount++;
                         //adding body to the map
                         CelestialMap.Add(planetImage, col, row);
                     }
                 }
             }
+            CheckIfPlanetsDiscovered();
         }
+
+        //func to check if all planets visible have been discovered
+        public void CheckIfPlanetsDiscovered()
+        {
+            int discoveredCount = 0;
+
+            //goes through every cell to check if cells are an image and if binding is celesialbodies
+            foreach (var child in CelestialMap.Children)
+            {
+                if (child is Image planetImage && planetImage.BindingContext is CelestialBodiesAPI.CelestialBody planetInfo)
+                {
+                    //if already discoverd, increase count
+                    if (PlanetDetails.IsDiscovered(planetInfo.englishName))
+                    {
+                        discoveredCount++;
+                    }
+                }
+            }
+            //when all planets are discovered display travel button
+            TravelButton.IsVisible = (discoveredCount == planetCount && planetCount > 0);
+        }
+
 
         private void Start_Button_Clicked(object sender, EventArgs e)
         {
@@ -141,7 +172,7 @@ namespace OneMansSky
             //loop to go through all the children in the map
             foreach (var child in CelestialMap.Children)
             {
-                if (child is Image planetImage && planetImage.BindingContext is CelestialBody planetData)
+                if (child is Image planetImage && planetImage.BindingContext is CelestialBody planetInfo)
                 {
                     //gets grid location of the planet
                     int row = Grid.GetRow(planetImage);
@@ -161,7 +192,7 @@ namespace OneMansSky
                     //then if player is close enough to the planet it will allow them to land on it
                     if (distance <= hoverDistanceThreshold)
                     {
-                        hoveredPlanet = planetData;
+                        hoveredPlanet = planetInfo;
                         break;
                     }
                 }
@@ -189,8 +220,27 @@ namespace OneMansSky
             {
                 var detailsPage = new PlanetDetails(planetToLand);
                 await Navigation.PushModalAsync(detailsPage, true);
+                
+                CheckIfPlanetsDiscovered();
             }
         }
 
+        //func to "travel" to another part of space to explore more planets
+        private async void TravelButton_Clicked(object sender, EventArgs e)
+        {
+            await GameLayout.FadeTo(0, 500);
+            var bodies = await CelestialBodiesAPI.GetCelestialInfo();
+            BuildCelestialMap(bodies);
+
+            //moves the player back to the middle of the screen, after "travelling"
+            if (player != null)
+            {
+                await player.MovePlayer(new Point(GameLayout.Width / 2, GameLayout.Height / 2));
+            }
+
+            TravelButton.IsVisible = false;
+
+            await GameLayout.FadeTo(1, 500);
+        }
     }
 }

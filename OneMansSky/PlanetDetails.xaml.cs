@@ -7,10 +7,12 @@ namespace OneMansSky
 {
     public partial class PlanetDetails : ContentPage, INotifyPropertyChanged
     {
+        //fields
         public double PopupWidth { get; set; }
         public double PopupHeight { get; set; }
 
-        private static List<string> discoveredBody  = new List<string>();
+        //list of previously discovered bodies
+        private static List<string> discoveredBody = new List<string>();
         private bool newDiscovery;
 
         public bool NewDiscovery
@@ -30,7 +32,7 @@ namespace OneMansSky
         //for getting message if planet was already discovered or not
         public string DiscoveredMessage
         {
-            get => NewDiscovery ? "New Discovery" : "Already Discovered!";
+            get => NewDiscovery ? "New Discovery!" : "Already Discovered!";
         }
 
         private CelestialBodiesAPI.CelestialBody planet;
@@ -51,7 +53,6 @@ namespace OneMansSky
         public PlanetDetails(CelestialBodiesAPI.CelestialBody selectedPlanet)
         {
             InitializeComponent();
-            LoadDiscoveredBodies();
 
             var screenWidth = DeviceDisplay.Current.MainDisplayInfo.Width;
             var screenHeight = DeviceDisplay.Current.MainDisplayInfo.Height;
@@ -75,6 +76,11 @@ namespace OneMansSky
             }
 
             BindingContext = this;
+        }
+        
+        public static bool IsDiscovered(string planetName)
+        {
+            return discoveredBody.Contains(planetName);
         }
 
         //OnAppearing to load a random planet when the the details page pops up
@@ -105,9 +111,11 @@ namespace OneMansSky
             }
         }
 
-        //command to close pop up
+        //command to close pop up, and when info is closed will load all previous discovered bodies, i had LoadDiscoveredBodies() in the constructor but that made 
+        //the discovered bodies buggy, where youd have to "land" many times for it to be considered discoveredd
         private async Task ClosePopup()
         {
+            LoadDiscoveredBodies();
             await Navigation.PopModalAsync();
         }
     }
