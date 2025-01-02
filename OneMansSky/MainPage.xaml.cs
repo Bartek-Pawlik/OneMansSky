@@ -13,6 +13,7 @@ namespace OneMansSky
         private CelestialBody? planetToLand;
         private int planetCount = 0;
         private static List<string> discoveredPlanets = new List<string>();
+        private bool isShowerActive = false;
 
         private const int NumRows = 10;
         private const int NumCols = 10;
@@ -140,9 +141,12 @@ namespace OneMansSky
             if (!startGame)
             {
                 charHeight = GameLayout.Height / 12.0;
-                player = new Player(charHeight, GameLayout, GameLayout.Height, GameLayout.Width);
+                player = new Player(charHeight, GameLayout, GameLayout.Height, GameLayout.Width, this);
                 BindingContext = player;
                 startGame = true;
+
+                //sets static properties for all meteors, general idea from: https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/named-and-optional-arguments
+                Meteor.SetStaticProperties(s: charHeight, p: player, layout: GameLayout, dispatcher: Dispatcher, page: this);
             }
         }
 
@@ -162,53 +166,57 @@ namespace OneMansSky
         //for calculating the distance i used: https://stackoverflow.com/questions/61237236/trying-to-find-the-distance-between-2-points, https://stackoverflow.com/questions/26157199/how-to-calculate-distance-between-2-coordinates
         private void IsPlanetHover()
         {
-            //get center coordinates of the player
-            double playerCenterX = player.Position.X + player.Position.Width / 2;
-            double playerCenterY = player.Position.Y + player.Position.Height / 2;
-
-            CelestialBody hoveredPlanet = null;
-            double hoverDistanceThreshold = 50; //how close the player needs to be to be considered hovering over the planet
-
-            //loop to go through all the children in the map
-            foreach (var child in CelestialMap.Children)
+            if (player != null)
             {
-                if (child is Image planetImage && planetImage.BindingContext is CelestialBody planetInfo)
+                //get center coordinates of the player
+                double playerCenterX = player.Position.X + player.Position.Width / 2;
+                double playerCenterY = player.Position.Y + player.Position.Height / 2;
+
+                CelestialBody hoveredPlanet = null;
+                double hoverDistanceThreshold = 50; //how close the player needs to be to be considered hovering over the planet
+
+                //loop to go through all the children in the map
+                foreach (var child in CelestialMap.Children)
                 {
-                    //gets grid location of the planet
-                    int row = Grid.GetRow(planetImage);
-                    int col = Grid.GetColumn(planetImage);
-
-                    //gets diameters of the cell, and the center of which grid cell the planet is in
-                    double width = CelestialMap.Width / NumCols;
-                    double height = CelestialMap.Height / NumRows;
-                    double planetCenterX = (col + 0.5) * width;
-                    double planetCenterY = (row + 0.5) * height;
-
-                    //calculating the distance between the players center and center of planet
-                    double dx = planetCenterX - playerCenterX;
-                    double dy = planetCenterY - playerCenterY;
-                    double distance = Math.Sqrt(dx * dx + dy * dy);
-
-                    //then if player is close enough to the planet it will allow them to land on it
-                    if (distance <= hoverDistanceThreshold)
+                    if (child is Image planetImage && planetImage.BindingContext is CelestialBody planetInfo)
                     {
-                        hoveredPlanet = planetInfo;
-                        break;
+                        //gets grid location of the planet
+                        int row = Grid.GetRow(planetImage);
+                        int col = Grid.GetColumn(planetImage);
+
+                        //gets diameters of the cell, and the center of which grid cell the planet is in
+                        double width = CelestialMap.Width / NumCols;
+                        double height = CelestialMap.Height / NumRows;
+                        double planetCenterX = (col + 0.5) * width;
+                        double planetCenterY = (row + 0.5) * height;
+
+                        //calculating the distance between the players center and center of planet
+                        double dx = planetCenterX - playerCenterX;
+                        double dy = planetCenterY - playerCenterY;
+                        double distance = Math.Sqrt(dx * dx + dy * dy);
+
+                        //then if player is close enough to the planet it will allow them to land on it
+                        if (distance <= hoverDistanceThreshold)
+                        {
+                            hoveredPlanet = planetInfo;
+                            break;
+                        }
                     }
+
                 }
 
-            }
 
-            //displays land button
-            if (hoveredPlanet != null)
-            {
-                LandButton.IsVisible = true; 
-                planetToLand = hoveredPlanet;
-            }
-            else
-            {
-                LandButton.IsVisible = false;
-                planetToLand = null;
+                //displays land button
+                if (hoveredPlanet != null)
+                {
+                    LandButton.IsVisible = true;
+                    planetToLand = hoveredPlanet;
+                }
+                else
+                {
+                    LandButton.IsVisible = false;
+                    planetToLand = null;
+                }
             }
 
         }
@@ -220,8 +228,53 @@ namespace OneMansSky
             {
                 var detailsPage = new PlanetDetails(planetToLand);
                 await Navigation.PushModalAsync(detailsPage, true);
-                
+
+                Random r = new Random();
+                if (r.NextDouble() < 0.9)
+                {
+                    //90% chance for now (will be much less in final version)
+                    StartMeteorShower();
+                }
+
                 CheckIfPlanetsDiscovered();
+            }
+        }
+
+        //func to start meteor shower
+        private async void StartMeteorShower()
+        {
+            //will spawn a meteor every seconds for 10 seconds
+            int showerDuration = 10000; 
+            int spawnInterval = 1000;   
+            isShowerActive = true;
+
+            int elapsed = 0;
+            while (elapsed < showerDuration && isShowerActive)
+            {
+                //discard used from: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/discards 
+                //as i wont be using the meteor object
+                _ = new Meteor();
+
+                //waits for the spawn interval
+                await Task.Delay(spawnInterval);
+                elapsed += spawnInterval;
+            }
+        }
+
+        //func to end the game
+        public async Task EndGame()
+        {
+            //sets game to false, doesnt allow moves, and displays game over message
+            isShowerActive = false;
+            if (player != null)
+            {
+                startGame = false;
+                player.Allowmoves = false;
+                await DisplayAlert("Game Over", "Your ship was destroyed by a meteor!", "OK");
+                GameLayout.Children.Clear();
+                LandButton.IsVisible = false;
+                TravelButton.IsVisible = false;
+                player = null;
             }
         }
 

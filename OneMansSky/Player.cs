@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Layouts;
+﻿using Microsoft.Maui.Controls.Shapes;
+using Microsoft.Maui.Layouts;
 using System.ComponentModel;
 
 
@@ -21,9 +22,9 @@ namespace OneMansSky
         private double maxHeight, maxWidth;
         private bool overedge = false;
         private double speed;
-
-        public Command ShootCommand { get; }
         private AbsoluteLayout mainLayout;
+        private MainPage mainPage;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         //properties
         private Rect pos;
@@ -56,13 +57,13 @@ namespace OneMansSky
         }
 
         // constructor, initializing new player.
-        public Player(double size, AbsoluteLayout mainl, double maxh, double maxw)
+        public Player(double size, AbsoluteLayout mainl, double maxh, double maxw, MainPage mainPage)
         {
 
             box = new Grid()
             {
-                WidthRequest = size,
-                HeightRequest = size,
+                WidthRequest = size / 3,
+                HeightRequest = size / 3,
                 BackgroundColor = Colors.Transparent,
             };
 
@@ -93,48 +94,12 @@ namespace OneMansSky
                 Update();
             };
 
-            speed = size / 250.0;
+            speed = size / 200.0;
             Allowmoves = false;
-
-            ShootCommand = new Command(async () => await ShootLaser());
 
             StartPlayer();
         }
 
-        //func to shoot gun / laser, collision will be added later
-        private async Task ShootLaser()
-        {
-            if (!Allowmoves)
-            {
-                return;
-            }
-            Image laser = new Image
-            {
-                Source = ImageSource.FromFile("laser.png"),
-                //laser size
-                WidthRequest = size * 2,   
-                HeightRequest = size,
-            };
-
-            //calculating lasers positions, x centering on players center, y placing it just above player, finalY setting destination
-            double laserX = box.TranslationX + (size / 2) - (laser.WidthRequest / 2);
-            double laserY = box.TranslationY - laser.HeightRequest;
-            double finalY = -laser.HeightRequest;
-
-            mainLayout.Add(laser);
-            AbsoluteLayout.SetLayoutFlags(laser, AbsoluteLayoutFlags.None);
-            AbsoluteLayout.SetLayoutBounds(laser, new Rect(laserX, laserY, laser.WidthRequest, laser.HeightRequest));
-            
-            uint duration = 1000;
-
-            //set x to 0 so no horizontal movement with laser
-            await laser.TranslateTo(0, finalY - laserY, duration);
-            
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                mainLayout.Remove(laser);
-            });
-        }
 
         public async void StartPlayer()
         {
@@ -161,6 +126,19 @@ namespace OneMansSky
                     box.CancelAnimations();
                 }
             }
+        }
+
+        //func to change player image when they're hit to an explosion
+        public async void GotHit()
+        {
+            Image explode = new Image()
+            {
+                WidthRequest = size * 2,
+                HeightRequest = size * 2,
+                Source = ImageSource.FromFile("explosion.png"),
+            };
+
+            box.Add(explode);
         }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
@@ -197,7 +175,5 @@ namespace OneMansSky
                 animation = null;
             }
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }
