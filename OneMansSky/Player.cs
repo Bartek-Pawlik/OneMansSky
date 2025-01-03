@@ -1,9 +1,10 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using System.ComponentModel;
+using Microsoft.Maui.Storage;
 
 
-/* most code here and in MainPage.cs was used from my DodgeGame lab,
+/* some code here and in MainPage.cs was used from my DodgeGame lab,
  * with changes to it to create a basic layout for the space
  * exploration game.
  */ 
@@ -36,6 +37,30 @@ namespace OneMansSky
             }
         }
 
+        //highscore property
+        private int highScore;
+        public int HighScore
+        {
+            get => highScore;
+            set
+            {
+                highScore = value;
+                Preferences.Set("HighScore", value);
+                OnPropertyChanged(nameof(HighScore));
+            }
+        }
+        //score property
+        private int score;
+        public int Score
+        {
+            get => score;
+            set
+            {
+                score = value;
+                OnPropertyChanged(nameof(Score));
+            }
+        }
+
         private bool allowmoves = false;
 
         public bool Allowmoves
@@ -48,6 +73,7 @@ namespace OneMansSky
                 OnPropertyChanged(nameof(EnableButton));
             }
         }
+
         public bool EnableButton
         {
             get
@@ -96,6 +122,9 @@ namespace OneMansSky
 
             speed = size / 200.0;
             Allowmoves = false;
+
+            //getting highscore from preferences
+            HighScore = Preferences.Get("HighScore", 0);
 
             StartPlayer();
         }

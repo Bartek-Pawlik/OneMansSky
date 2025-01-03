@@ -1,4 +1,5 @@
 ﻿using OneMansSky;
+using System;
 using System.Text.Json;
 using static OneMansSky.CelestialBodiesAPI;
 
@@ -18,9 +19,13 @@ namespace OneMansSky
         private const int NumRows = 10;
         private const int NumCols = 10;
 
+
+
         public MainPage()
         {
             InitializeComponent();
+           
+            BindingContext = this;
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -81,6 +86,7 @@ namespace OneMansSky
             {
                 for (int col = 0; col < NumCols; col++)
                 {
+                    double chance2 = random.NextDouble();
                     //random value from 0 to 1
                     double chance = random.NextDouble();
                     //5% chance for a cell to have something in it (may be tweaked later)
@@ -93,7 +99,7 @@ namespace OneMansSky
                         //random number from 1-20 to choose planet image
                         int randNum = random.Next(1, 21);
 
-                        //planet image depends on random num above
+                        //planet image depends on random num
                         Image planetImage = new Image
                         {
                             Source = ImageSource.FromFile("planet" + randNum + ".png"),
@@ -106,6 +112,7 @@ namespace OneMansSky
                         };
                         planetCount++;
                         //adding body to the map
+
                         CelestialMap.Add(planetImage, col, row);
                     }
                 }
@@ -144,6 +151,7 @@ namespace OneMansSky
                 player = new Player(charHeight, GameLayout, GameLayout.Height, GameLayout.Width, this);
                 BindingContext = player;
                 startGame = true;
+                player.Score = 0;//reset this games score to 0
 
                 //sets static properties for all meteors, general idea from: https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/named-and-optional-arguments
                 Meteor.SetStaticProperties(s: charHeight, p: player, layout: GameLayout, dispatcher: Dispatcher, page: this);
@@ -229,8 +237,19 @@ namespace OneMansSky
                 var detailsPage = new PlanetDetails(planetToLand);
                 await Navigation.PushModalAsync(detailsPage, true);
 
+                //for counting player score, if theyre the same, both will go up else only this games score goes up
+                if(player.Score < player.HighScore)
+                {
+                    player.Score++;
+                }
+                else if(player.Score == player.HighScore)
+                {
+                    player.HighScore++;
+                    player.Score++;
+                }
+
                 Random r = new Random();
-                if (r.NextDouble() < 0.9)
+                if (r.NextDouble() < 0.90)
                 {
                     //90% chance for now (will be much less in final version)
                     StartMeteorShower();

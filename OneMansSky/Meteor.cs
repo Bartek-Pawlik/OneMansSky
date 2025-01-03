@@ -147,12 +147,7 @@ namespace OneMansSky
             double shrinkHeight = meteorH * shrink;
 
             //meteor hitbox
-            Rect meteorRect = new Rect(
-                box.TranslationX + shrinkWidth / 2,
-                box.TranslationY + shrinkHeight / 2, 
-                size - shrinkWidth, 
-                size - shrinkHeight
-                );
+            Rect meteorRect = new Rect( box.TranslationX + shrinkWidth / 2, box.TranslationY + shrinkHeight / 2,  size - shrinkWidth,  size - shrinkHeight);
 
             //checks for collision
             if (meteorRect.IntersectsWith(playerRect))
