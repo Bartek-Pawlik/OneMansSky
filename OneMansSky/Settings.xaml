@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OneMansSky.Settings"
+             xmlns:set="clr-namespace:OneMansSky"
+             Title=""
+             BackgroundColor="#90000000"
+             x:DataType="set:Settings">
+    
+    
+        <VerticalStackLayout Padding="40" Spacing="40" >
+        <Frame CornerRadius="20" BackgroundColor="Gray" Padding="20" WidthRequest="400" BorderColor="Black" >
+            <VerticalStackLayout>
+                <Label Text="Difficulty" FontSize="24" HorizontalOptions="Center" />
+
+            <Picker x:Name="Difficulty" Title="Choose difficulty" HorizontalOptions="Center">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Easy</x:String>
+                        <x:String>Normal</x:String>
+                        <x:String>Hard</x:String>
+                        <x:String>Impossible</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+
+            <Button Text="Save" BackgroundColor="Black" Clicked="OnSaveClicked" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Frame>
+    </VerticalStackLayout>
+    
+</ContentPage>

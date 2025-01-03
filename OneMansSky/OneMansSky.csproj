@@ -75,12 +75,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Settings.xaml.cs">
+	    <DependentUpon>Settings.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="PlanetDetails.xaml.cs">
 	    <DependentUpon>PlanetDetails.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Settings.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="PlanetDetails.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

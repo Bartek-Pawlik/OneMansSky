@@ -8,7 +8,7 @@
              BackgroundColor="#90000000">
 
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" MaximumHeightRequest="{Binding PopupWidth}" MaximumWidthRequest="{Binding PopupHeight}" Padding="20" Margin="20">
-        <Frame CornerRadius="20" BackgroundColor="LightBlue" Padding="10">
+        <Frame CornerRadius="20" BackgroundColor="Gray" Padding="10" BorderColor="Black">
             <VerticalStackLayout>
                 <Label Text="{Binding DiscoveredMessage}" FontSize="18" HorizontalOptions="Center" />
 

@@ -6,15 +6,15 @@
              Title=""
              x:DataType="viewmodel:Player">
 
- 
+    
 
     <Grid>
 
         <Image Source="starbg.jpg" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill"/>
 
         <Label Text="{Binding HighScore, StringFormat='High Score: {0}'}"  TextColor="White"  FontSize="40"/>
-        <Label Text="{Binding Score, StringFormat='Score: {0}'}"  TextColor="White"  FontSize="40" TranslationY="50"/>
-        
+        <Label Text="{Binding Score, StringFormat='Score: {0}'}"  TextColor="White"  FontSize="40" TranslationY="50" />
+
         <Grid x:Name="CelestialMap" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="5" Margin="5" BackgroundColor="Transparent"/>
 
         <VerticalStackLayout>
@@ -25,16 +25,18 @@
                 </AbsoluteLayout.GestureRecognizers>
             </AbsoluteLayout>
 
-            <Button x:Name="StartButton" WidthRequest="150" HeightRequest="60" Text="Start Game" Clicked="Start_Button_Clicked" IsVisible="{Binding EnableButton}" ZIndex="10"/>
-            <Grid x:Name="Bottom" WidthRequest="300" HeightRequest="60" HorizontalOptions="Center">
-                <HorizontalStackLayout Spacing="10" Padding="5">
-                    <Button x:Name="LandButton" Text="Land!" WidthRequest="70" HeightRequest="50" IsVisible="False" Clicked="LandButton_Clicked" />
+            <Button x:Name="StartButton" FontSize="20" WidthRequest="150" HeightRequest="60" Text="Start Game" BackgroundColor="#646464" TextColor="White" Clicked="Start_Button_Clicked" IsVisible="{Binding EnableButton}" ZIndex="10"/>
 
+            <Grid x:Name="Bottom" VerticalOptions="End" HeightRequest="60">
+                <HorizontalStackLayout Spacing="10" Padding="5" HorizontalOptions="Center">
+                    <Button x:Name="LandButton" FontSize="15" Text="Land!" BackgroundColor="#646464" TextColor="White" WidthRequest="70" HeightRequest="50" IsVisible="False" Clicked="LandButton_Clicked" />
 
-                    <Button x:Name="TravelButton" Text="Travel!" IsVisible="False" Clicked="TravelButton_Clicked" WidthRequest="70" HeightRequest="50" />
+                    <Button x:Name="TravelButton" BackgroundColor="#646464" TextColor="White" Text="Travel!" IsVisible="False" Clicked="TravelButton_Clicked" WidthRequest="70" HeightRequest="50" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout HorizontalOptions="Start">
+                    <ImageButton Source="settingsbest.png" HorizontalOptions="Start" VerticalOptions="End" Clicked="Settings_Clicked"  WidthRequest="30" HeightRequest="30" BackgroundColor="Transparent" />
                 </HorizontalStackLayout>
             </Grid>
-
 
         </VerticalStackLayout>
     </Grid>

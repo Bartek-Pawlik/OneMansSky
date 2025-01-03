@@ -20,12 +20,15 @@ namespace OneMansSky
         private const int NumCols = 10;
 
 
-
+        //constructor to set binding and load difficulty
         public MainPage()
         {
             InitializeComponent();
            
             BindingContext = this;
+
+            string savedDifficulty = Preferences.Get("Difficulty", "Normal");
+            Meteor.SetDifficulty(savedDifficulty);
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -262,9 +265,9 @@ namespace OneMansSky
         //func to start meteor shower
         private async void StartMeteorShower()
         {
-            //will spawn a meteor every seconds for 10 seconds
-            int showerDuration = 10000; 
-            int spawnInterval = 1000;   
+            //will spawn meteors depending on diffuculty selected
+            int showerDuration = Meteor.GetShowerDuration();
+            int spawnInterval = Meteor.GetSpawnInterval(); 
             isShowerActive = true;
 
             int elapsed = 0;
@@ -313,6 +316,12 @@ namespace OneMansSky
             TravelButton.IsVisible = false;
 
             await GameLayout.FadeTo(1, 500);
+        }
+
+        //button that opens settings page
+        private async void Settings_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new Settings(), true);
         }
     }
 }

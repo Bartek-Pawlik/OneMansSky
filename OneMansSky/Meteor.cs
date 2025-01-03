@@ -1,3 +1,4 @@
+
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Dispatching;
 using System.Timers;
@@ -23,6 +24,15 @@ namespace OneMansSky
         private System.Timers.Timer timer;
         private Task<bool>? animation;
         private bool top;
+        private static double speedMulti = 1.0;
+        private static int spawnInterval = 1000;
+        private static int showerDuration = 10000;
+
+        public static string CurrentDifficulty { get; private set; } = "Normal";
+
+        public static int GetShowerDuration() => showerDuration;
+        public static int GetSpawnInterval() => spawnInterval;
+
 
         //setting static properties for all meteors
         public static void SetStaticProperties(double s, Player p, AbsoluteLayout layout, IDispatcher dispatcher, MainPage page)
@@ -104,7 +114,7 @@ namespace OneMansSky
             await Task.Delay(randDelay);
 
             //random speed between 2000 and 3000ms for meteor to move across screen
-            uint randSpeed = (uint)rand.Next(2000, 3000);
+            uint randSpeed = (uint)(rand.Next(2000, 3000) * speedMulti);
 
             //move meteor depending where it spawns, top goes down, side goes left
             if (top)
@@ -124,6 +134,44 @@ namespace OneMansSky
             if (box.TranslationY >= height || box.TranslationX <= -size)
             {
                 FullyRemoveMeteor();
+            }
+        }
+
+        //func to set difficulty
+        public static void SetDifficulty(string difficulty)
+        {
+            CurrentDifficulty = difficulty;
+
+            //different speeds, durations, and spawn intervals for different difficulties, easy is slower, hard is faster, impossible is well, impossible
+            switch (difficulty)
+            {
+                case "Easy":
+                    
+                    speedMulti = 1.3; 
+                    spawnInterval = 1500;
+                    showerDuration = 10000;//10 secs
+                    break;
+
+                case "Hard":
+                    
+                    speedMulti = 0.7;
+                    spawnInterval = 600;
+                    showerDuration = 15000;//15 secs
+                    break;
+
+                case "Impossible":
+
+                    speedMulti = 0.3;
+                    spawnInterval = 300;
+                    showerDuration = 20000;//20 secs
+                    break;
+
+                default:
+                    //normal
+                    speedMulti = 1.0;
+                    spawnInterval = 1000;
+                    showerDuration = 10000;//10 secs
+                    break;
             }
         }
 

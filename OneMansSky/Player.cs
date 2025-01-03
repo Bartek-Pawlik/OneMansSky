@@ -175,7 +175,7 @@ namespace OneMansSky
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        //moving the ship can still be buggy, and you can get faster or slower speeds depending where you click.
+        //moving the ship can still be buggy, and you can get faster or slower speeds depending where you click. Double clicking also seems to make you move faster
         public async Task MovePlayer(Point p)
         {
             if (allowmoves)
